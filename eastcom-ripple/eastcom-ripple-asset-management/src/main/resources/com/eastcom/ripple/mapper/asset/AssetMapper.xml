@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.asset.AssetMapper">
+
+    <!--根据条件查询资产信息-->
+    <select id="findAssetByCondition" resultType="assetDTO">
+        select a.id,a.asset_num,a.asset_name,a.unit_price,a.producer,a.production_date,a.storage_time,a.purchaser,t.asset_type_name
+        from asset a inner join asset_type t on a.asset_type_id = t.type_id
+        <where>
+            <if test="assetTypeId != 0">
+                asset_type_id = #{assetTypeId}
+            </if>
+            <if test="keyword != null and keyword != 'null' and keyword != ''">
+                and (a.asset_num like CONCAT('%', #{keyword},'%') or a.producer like  CONCAT('%', #{keyword},'%')
+                or a.purchaser like  CONCAT('%', #{keyword},'%'))
+            </if>
+        </where>
+    </select>
+    <!--根据资产编号和资产类型查找资产记录-->
+    <select id="findByAssetNumAndType" resultType="assetDTO">
+        select a.*, t.asset_type_name  from asset a inner join asset_type t on a.asset_type_id = t.type_id
+        where asset_num = #{assetNum} and asset_type_id = #{assetType}
+    </select>
+
+    <!--根据资产ID查询资产信息-->
+    <select id="findAssetById" resultType="assetDTO">
+        select a.*, t.asset_type_name  from asset a inner join asset_type t on a.asset_type_id = t.type_id
+        where a.id = #{id}
+    </select>
+
+    <!--添加资产信息-->
+    <insert id="insertAsset" parameterType="asset">
+        insert into asset
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="assetNum != null and assetNum != 'null' and assetNum != ''">
+                asset_num,
+            </if>
+            <if test="assetName != null and assetName != 'null' and assetName != ''">
+                asset_name,
+            </if>
+            <if test="unitPrice != null">
+                unit_price,
+            </if>
+            <if test="producer != null and producer != 'null' and producer != ''">
+                producer,
+            </if>
+            <if test="productionDate != null">
+                production_date,
+            </if>
+            <if test="storageTime != null">
+                storage_time,
+            </if>
+            <if test="purchaser != null">
+                purchaser,
+            </if>
+            <if test="assetTypeId != null">
+                asset_type_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="assetNum != null and assetNum != 'null' and assetNum != ''">
+                #{assetNum},
+            </if>
+            <if test="assetName != null and assetName != 'null' and assetName != ''">
+                #{assetName},
+            </if>
+            <if test="unitPrice != null">
+                #{unitPrice},
+            </if>
+            <if test="producer != null and producer != 'null' and producer != ''">
+                #{producer},
+            </if>
+            <if test="productionDate != null">
+                #{productionDate},
+            </if>
+            <if test="storageTime != null">
+                #{storageTime},
+            </if>
+            <if test="purchaser != null">
+                #{purchaser},
+            </if>
+            <if test="assetTypeId != null">
+                #{assetTypeId},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime}
+            </if>
+        </trim>
+    </insert>
+
+    <!--更新资产信息-->
+    <update id="updateAsset" parameterType="asset">
+        update asset
+        <trim prefix="set" suffixOverrides=",">
+            <if test="unitPrice != null">
+                unit_price = #{unitPrice},
+            </if>
+            <if test="producer != null and producer != 'null' and producer != ''">
+                producer = #{producer},
+            </if>
+            <if test="productionDate != null">
+                production_date = #{productionDate},
+            </if>
+            <if test="storageTime != null">
+                storage_time = #{storageTime},
+            </if>
+            <if test="purchaser != null">
+                purchaser = #{purchaser},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <!--根据资产id修改资产名称-->
+    <update id="updateAssetName">
+        update asset
+        <trim prefix="set" suffixOverrides=",">
+            <if test="assetName != null and assetName != 'null' and assetName != ''">
+                asset_name = #{assetName},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <!--删除资产信息-->
+    <delete id="deleteAsset" parameterType="int">
+        delete from asset where id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.EmployeeDistributeMapper">
+    <!--映射对象  -->
+    <resultMap type="com.eastcom.ripple.util.EmployeeDistribute" id="BaseResultMap" >
+        <id column="employee_id" property="employeeId" jdbcType="BIGINT"/>
+        <result	column="employee_name" property="employeeName" jdbcType="VARCHAR"/>
+        <result column="employee_sex" property="employeeSex" jdbcType="VARCHAR"/>
+        <result	column="employee_phone" property="employeePhone" jdbcType="VARCHAR"/>
+        <result	column="employee_email" property="employeeEmail" jdbcType="VARCHAR"/>
+        <result	column="employee_eduSchool" property="employeeEduSchool" jdbcType="VARCHAR"/>
+        <result	column="employee_idcard" property="employeeIdcard" jdbcType="VARCHAR"/>
+        <result	column="employee_address" property="employeeAddress" jdbcType="VARCHAR"/>
+        <result	column="job_id" property="jobId" jdbcType="INTEGER"/>
+        <result	column="job_name" property="jobName" jdbcType="VARCHAR"/>
+        <result	column="department_name" property="departmentName" jdbcType="VARCHAR"/>
+        <result	column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result	column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <update id="updateEmployeeDistribute"  useGeneratedKeys="true" keyProperty="employeeId">
+	    update tb_employee set
+		job_id=#{employeeDistribute.jobId},
+		modifyTime= current_timestamp() where
+		employee_id=#{employeeDistribute.employeeId};
+    </update>
+    <!--根据ID获取-->
+    <select id="findById" resultMap="BaseResultMap">
+      select e.employee_id,e.employee_name,e.employee_phone,e.employee_email,e.employee_address,e.employee_idcard,e.employee_sex,j.job_name,d.department_name,e.employee_eduSchool
+      from tb_employee e
+      left join tb_job j on e.job_id = j.job_id
+      left join tb_department d on d.department_id = j.department_id
+      where e.employee_id=#{employeeDistributeId};
+    </select>
+    <!--获取所有员工分配对象-->
+    <select id="findAll" resultMap="BaseResultMap">
+      select e.employee_id,e.employee_name,REPLACE(e.employee_phone, SUBSTR(e.employee_phone,4,4), '****') as employee_phone,e.employee_sex,j.job_name,d.department_name,e.employee_email,e.employee_address,REPLACE(e.employee_idcard, SUBSTR(e.employee_idcard,5,10), '**********') as employee_idcard
+      from tb_employee e
+      left join tb_job j on e.job_id = j.job_id
+      left join tb_department d on d.department_id = j.department_id
+      limit #{page.currentPage},#{page.pageSize};
+    </select>
+
+    <select id="findEmployeeDistributeLike" resultMap="BaseResultMap">
+        select e.employee_id,e.employee_name,REPLACE(e.employee_phone, SUBSTR(e.employee_phone,4,4), '****') as employee_phone,e.employee_sex,j.job_name,d.department_name,e.employee_email,e.employee_address,REPLACE(e.employee_idcard, SUBSTR(e.employee_idcard,5,10), '**********') as employee_idcard
+        from tb_employee e
+        left join tb_job j on e.job_id = j.job_id
+        left join tb_department d on d.department_id = j.department_id
+        where
+        e.employee_name like concat('%',#{employeeDistribute.employeeName},'%')
+        and e.employee_id like concat('%',#{employeeDistribute.employeeId},'%');
+    </select>
+
+</mapper>

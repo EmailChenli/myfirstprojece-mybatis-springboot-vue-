@@ -1,0 +1,7 @@
+server:
+  port: 8006
+  servlet:
+    context-path: /ordering
+spring:
+  application:
+    name: eastcom-ripple-ordering-platform    #Micro service name

@@ -1,0 +1,6 @@
+server:
+  port: 8007
+
+spring:
+  application:
+    name: eastcom-ripple-shiro      #Micro service name

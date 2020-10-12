@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.computer.ComputerMapper">
+
+    <!--根据条件查询电脑-->
+    <select id="findComByCondition" resultType="computer">
+        select com_sn,asset_num,com_type,com_name,com_cpu,com_memory,holder_num,com_status from computer
+        <where>
+            <if test="comStatus != -1">
+                com_status = #{comStatus}
+            </if>
+            <if test="keyword != null and keyword != 'null' and keyword != ''">
+                and (asset_num like CONCAT('%', #{keyword},'%') or com_name like  CONCAT('%', #{keyword},'%')
+                or com_type like  CONCAT('%', #{keyword},'%'))
+            </if>
+        </where>
+    </select>
+
+    <!--根据电脑SN码查询-->
+    <select id="findComByComSn" resultType="computer" parameterType="String">
+        select * from computer where com_sn = #{comSn}
+    </select>
+
+    <!--根据资产编号查询-->
+    <select id="findComByAssetNum" resultType="computer" parameterType="String">
+        select * from computer where asset_num = #{assetNum}
+    </select>
+
+    <!--添加电脑信息，默认状态为0，表示空闲-->
+    <insert id="insertComputer" parameterType="computer">
+        insert into computer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="comSn != null and comSn != 'null' and comSn != ''">
+                com_sn,
+            </if>
+            <if test="assetNum != null and assetNum != 'null' and assetNum != ''">
+                asset_num,
+            </if>
+            <if test="comType != null and comType != 'null' and comType != ''">
+                com_type,
+            </if>
+            <if test="comName != null and comName != 'null' and comName != ''">
+                com_name,
+            </if>
+            <if test="comCpu != null and comCpu != 'null' and comCpu != ''">
+                com_cpu,
+            </if>
+            <if test="comMemory != null and comMemory != 'null' and comMemory != ''">
+                com_memory,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="comSn != null and comSn != 'null' and comSn != ''">
+                #{comSn},
+            </if>
+            <if test="assetNum != null and assetNum != 'null' and assetNum != ''">
+                #{assetNum},
+            </if>
+            <if test="comType != null and comType != 'null' and comType != ''">
+                #{comType},
+            </if>
+            <if test="comName != null and comName != 'null' and comName != ''">
+                #{comName},
+            </if>
+            <if test="comCpu != null and comCpu != 'null' and comCpu != ''">
+                #{comCpu},
+            </if>
+            <if test="comMemory != null and comMemory != 'null' and comMemory != ''">
+                #{comMemory},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime}
+            </if>
+        </trim>
+    </insert>
+
+    <!--更新电脑信息-->
+    <update id="updateComputer" parameterType="computer">
+        update computer
+        <trim prefix="set" suffixOverrides=",">
+            <if test="comType != null and comType != 'null' and comType != ''">
+                com_type=#{comType},
+            </if>
+            <if test="comName != null and comName != 'null' and comName != ''">
+                com_name=#{comName},
+            </if>
+            <if test="comCpu != null and comCpu != 'null' and comCpu != ''">
+                com_cpu=#{comCpu},
+            </if>
+            <if test="comMemory != null and comMemory != 'null' and comMemory != ''">
+                com_memory =#{comMemory},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        where com_sn = #{comSn}
+    </update>
+
+    <!--根据电脑SN码更改电脑的状态-->
+    <update id="updateComStatus">
+        update computer set com_status = #{comStatus}, update_time = #{updateTime} where com_sn = #{comSn}
+    </update>
+
+    <!--根据电脑SN码更改电脑的持有人工号-->
+    <update id="updateHolderNum">
+        update computer set holder_num = #{holderNum}, update_time = #{updateTime} where com_sn = #{comSn}
+    </update>
+
+    <!--删除电脑信息-->
+    <delete id="deleteComputer" parameterType="String">
+        delete from computer where com_sn = #{comSn}
+    </delete>
+</mapper>

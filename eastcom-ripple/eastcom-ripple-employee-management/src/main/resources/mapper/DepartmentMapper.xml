@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 映射与包下对应，否则报无法找到对象错误 -->
+<mapper namespace="com.eastcom.ripple.mapper.DepartmentMapper">
+<resultMap type="com.eastcom.ripple.entity.Department" id="BaseResultMap">
+	<id column="department_id" property="departmentId" jdbcType="INTEGER"/>
+	<result column="department_name" property="departmentName" jdbcType="VARCHAR"/>
+	<result column="department_msg" property="departmentMsg" jdbcType="VARCHAR"/>
+	<result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+	<result column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP"/>
+</resultMap>
+<!-- 添加部门对象 -->
+<insert id="addDepartment"  useGeneratedKeys="true" keyProperty="departmentId">
+	insert into tb_department(department_name,department_msg)
+	value(#{department.departmentName},#{department.departmentMsg});
+</insert>
+
+<!-- 根据id更新部门对象 parameterType加了@param注解可以不写-->
+<update id="updateDepartmentById"  useGeneratedKeys="true" keyProperty="departmentId">
+	update tb_department set
+	department_name=#{department.departmentName},
+	department_msg=#{department.departmentMsg},
+	modifyTime= current_timestamp() where
+	department_id=#{department.departmentId};
+</update>
+
+<!--根据id删除对象  -->
+<delete id="deleteDepartmentById" >
+	delete from tb_department where department_id=#{departmentId};
+</delete>
+
+<!-- 查询所有部门 -->
+<select id="findDepartmentAll" resultMap="BaseResultMap">
+	select * from tb_department limit #{page.currentPage},#{page.pageSize};
+</select>
+
+<!--根据id获取部门对象  -->
+<select id="findDepartmentById"  resultMap="BaseResultMap">
+	select * from tb_department where department_id=#{departmentId};
+</select>
+	<!--查找职位对象-->
+	<select id="findByName"  resultMap="BaseResultMap" >
+		select * from tb_department where department_name=#{departmentName}
+	</select>
+<!--根据关键字获取对象  -->
+<select id="findDepartmentLike"  resultMap="BaseResultMap">
+	select * from tb_department where 
+	department_name like concat('%',#{departmentName},'%')
+	order by department_id asc;
+</select>
+
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.SalaryMapper">
+	<resultMap type="com.eastcom.ripple.entity.Salary" id="BaseResultMap">
+		<id	column="salary_id" property="salaryId" jdbcType="BIGINT"/>
+		<result	column="salary_number" property="salaryNumber" jdbcType="INTEGER"/>
+		<result column="examineDays" property="examineDays" jdbcType="INTEGER"/>
+		<result column="attendentDays" property="attendentDays" jdbcType="INTEGER"/>
+		<result column="salary_attendent" property="salaryAttendent" jdbcType="INTEGER"/>
+		<result column="salary_taxable" property="salaryTaxable" jdbcType="INTEGER"/>
+		<result column="salary_incomeTax" property="salaryIncomeTax" jdbcType="INTEGER"/>
+		<result column="salary_real" property="salaryReal" jdbcType="INTEGER"/>
+		<result	column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+		<result	column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	<select id="findAll" resultMap="BaseResultMap" >
+		select *from tb_salary;
+	</select>
+
+	<select id="findById" parameterType="Long" resultMap="BaseResultMap">
+		select *from tb_salary where salary_id=#{salaryId};
+	</select>
+</mapper>

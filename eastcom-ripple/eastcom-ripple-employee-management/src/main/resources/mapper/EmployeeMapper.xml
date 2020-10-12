@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.EmployeeMapper">
+<!--映射对象  -->
+<resultMap type="com.eastcom.ripple.entity.Employee" id="BaseResultMap" >
+	<id column="employee_id" property="employeeId" jdbcType="BIGINT"/>
+	<result	column="employee_name" property="employeeName" jdbcType="VARCHAR"/>
+	<result column="employee_sex" property="employeeSex" jdbcType="VARCHAR"/>
+	<result	column="employee_phone" property="employeePhone" jdbcType="VARCHAR"/>
+	<result	column="employee_email" property="employeeEmail" jdbcType="VARCHAR"/>
+	<result	column="employee_eduSchool" property="employeeEduSchool" jdbcType="VARCHAR"/>
+	<result	column="employee_idcard" property="employeeIdcard" jdbcType="VARCHAR"/>
+	<result	column="employee_address" property="employeeAddress" jdbcType="VARCHAR"/>
+	<result	column="job_id" property="jobId" jdbcType="INTEGER"/>
+	<result	column="reserve_times" property="reserveTimes" jdbcType="INTEGER"/>
+	<result	column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+	<result	column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP"/>
+</resultMap>
+	<!-- 添加员工对象#{employee.jobId} ,job_id-->
+	<insert id="addEmployee"  useGeneratedKeys="true" keyProperty="employeeId">
+		insert into tb_employee(employee_name,employee_sex,employee_phone,employee_email,employee_eduSchool,employee_idcard,employee_address)
+		value
+		(#{employee.employeeName},
+		#{employee.employeeSex},
+		#{employee.employeePhone},
+		#{employee.employeeEmail},
+		#{employee.employeeEduSchool},
+		#{employee.employeeIdcard},
+		#{employee.employeeAddress});
+	</insert>
+
+	<!-- 根据id更新员工对象 parameterType+@注解可以不写-->
+	<update id="updateEmployeeById"  useGeneratedKeys="true" keyProperty="employeeId" >
+		update tb_employee set
+		employee_name=#{employee.employeeName},
+		employee_sex=#{employee.employeeSex},
+		employee_phone=#{employee.employeePhone},
+		employee_email=#{employee.employeeEmail},
+		employee_eduSchool=#{employee.employeeEduSchool},
+		employee_idcard=#{employee.employeeIdcard},
+		employee_address=#{employee.employeeAddress},
+		modifyTime= current_timestamp() where
+		employee_id=#{employee.employeeId};
+	</update>
+
+	<!--根据id删除对象  -->
+	<delete id="deleteEmployeeById"  >
+		delete from tb_employee where employee_id=#{employeeId};
+	</delete>
+
+
+	<!--查询所有在职人员-->
+<select id="findAll" resultMap="BaseResultMap">
+	select e.employee_id,e.employee_name,e.employee_sex,REPLACE(e.employee_phone, SUBSTR(e.employee_phone,4,4), '****') as employee_phone,e.employee_email,e.employee_eduSchool,REPLACE(e.employee_idcard, SUBSTR(e.employee_idcard,5,10), '**********') as employee_idcard,e.employee_address,e.job_id,e.createTime,e.modifyTime
+	from  tb_employee e
+	limit #{page.currentPage},#{page.pageSize};
+</select>
+
+	<!--根据id获取职位信息-->
+<select id="findById"  resultMap="BaseResultMap">
+	select * from  tb_employee where employee_id=#{employeeId};
+</select>
+	<!--根据关键字获取对象 limit #{page.currentPage},#{page.pageSize} -->
+	<select id="findEmployeeLike"  resultMap="BaseResultMap">
+	 	select e.employee_id,e.employee_name,e.employee_sex,REPLACE(e.employee_phone, SUBSTR(e.employee_phone,4,4), '****') as employee_phone,e.employee_email,e.employee_eduSchool,REPLACE(e.employee_idcard, SUBSTR(e.employee_idcard,5,10), '**********') as employee_idcard,e.employee_address,e.job_id,e.createTime,e.modifyTime
+		from  tb_employee e
+		where
+		e.employee_name like concat('%',#{employee.employeeName},'%')
+        and e.employee_id like concat('%',#{employee.employeeId},'%')
+		limit #{page.currentPage},#{page.pageSize};
+	</select>
+
+	<select id="batchQueryEmpName" resultType="com.eastcom.ripple.common.vo.employee.BatchQueryEmpVO">
+		select employee_id, employee_name from tb_employee
+		<where>
+			<foreach collection="employeeIds" open="employee_id in (" close=")" separator="," item="employeeId">
+				#{employeeId}
+			</foreach>
+		</where>
+	</select>
+
+	<select id="findReserveTimes"  resultMap="BaseResultMap">
+	 	select e.employee_id,e.employee_name,e.employee_phone,e.employee_email,e.reserve_times
+	 	from  tb_employee e
+		where
+		e.reserve_times > 0
+		limit #{start},#{rows};
+	</select>
+
+	<select id="findReserveTimesCount" resultType="int">
+	 	select count(*)
+	 	from  tb_employee
+		where reserve_times > 0;
+	</select>
+
+	<select id="findReserveTimesByEmployeeId" resultMap="BaseResultMap">
+	 	select reserve_times
+	 	from  tb_employee
+		where employee_id = #{employeeId}
+	</select>
+
+	<update id="updateReserveTimes">
+		update tb_employee set
+		reserve_times=#{reserveTimes}
+		where employee_id=#{employeeId}
+	</update>
+
+</mapper>

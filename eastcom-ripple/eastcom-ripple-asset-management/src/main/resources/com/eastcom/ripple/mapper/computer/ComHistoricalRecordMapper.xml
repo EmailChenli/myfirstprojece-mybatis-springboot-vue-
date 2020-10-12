@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.computer.ComHistoricalRecordMapper">
+
+    <!--根据条件查询电脑分配历史记录信息-->
+    <select id="findHistoryByCondition" resultType="comHistoricalRecordVO" parameterType="String">
+        select historical_id,historical_com_sn,historical_asset_num,historical_emp_num,
+        historical_emp_Name,get_com_time,return_com_time from com_historical_record
+        <where>
+            <if test="keyword != null and keyword != 'null' and keyword != ''">
+                historical_com_sn like CONCAT('%', #{keyword},'%') or historical_asset_num like CONCAT('%', #{keyword},'%') or historical_emp_name like  CONCAT('%', #{keyword},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--根据电脑sn、工号、得到电脑时间，且归还时间为null，获得历史记录的ID-->
+    <select id="findHistoricalId" resultType="Integer">
+        select historical_id from com_historical_record where historical_com_sn = #{comSn} and historical_emp_num = #{employeeNum}
+        and get_com_time = #{getComTime} and ISNUll(return_com_time)
+    </select>
+
+    <!--添加电脑分配历史记录-->
+    <insert id="insertComHistoricalRecord" parameterType="ComHistoricalRecord">
+        insert into com_historical_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="historicalComSn != null and historicalComSn != 'null' and historicalComSn != ''">
+                historical_com_sn,
+            </if>
+            <if test="historicalAssetNum != null and historicalAssetNum != 'null' and historicalAssetNum != ''">
+                historical_asset_num,
+            </if>
+            <if test="historicalEmpNum != null">
+                historical_emp_num,
+            </if>
+            <if test="historicalEmpName != null and historicalEmpName != 'null' and historicalEmpName != ''">
+                historical_emp_name,
+            </if>
+            <if test="getComTime != null">
+                get_com_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="historicalComSn != null and historicalComSn != 'null' and historicalComSn != ''">
+                #{historicalComSn},
+            </if>
+            <if test="historicalAssetNum != null and historicalAssetNum != 'null' and historicalAssetNum != ''">
+                #{historicalAssetNum},
+            </if>
+            <if test="historicalEmpNum != null">
+                #{historicalEmpNum},
+            </if>
+            <if test="historicalEmpName != null and historicalEmpName != 'null' and historicalEmpName != ''">
+                #{historicalEmpName},
+            </if>
+            <if test="getComTime != null">
+                #{getComTime},
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据历史记录ID修改该记录归还电脑的时间-->
+    <update id="updateReturnComTime">
+        update com_historical_record
+        <trim prefix="set" suffixOverrides=",">
+            <if test="returnTime != null">
+                return_com_time = #{returnTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        where historical_id = #{historicalId}
+    </update>
+</mapper>

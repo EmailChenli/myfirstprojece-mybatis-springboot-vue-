@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.computer.ComEmpRecordMapper">
+
+    <!--查询所有分配电脑的记录-->
+    <select id="findAllAssignComRecord" resultType="AssignComVO">
+        SELECT record_id,record_com_sn,asset_num as recordAssetNum,record_emp_num,get_com_time,return_com_time
+        from com_emp_record inner join computer on record_com_sn = com_sn where ISNUll(return_com_time)
+    </select>
+
+    <!--根据记录ID查询分配电脑的记录-->
+    <select id="findComEmpRecordById" resultType="comEmpRecord" parameterType="int">
+        SELECT * FROM com_emp_record where record_id = #{recordId}
+    </select>
+
+    <!--添加分配电脑记录信息-->
+    <insert id="insertComEmpRecord" parameterType="assignComQueryVO">
+        insert into com_emp_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="comSn != null and comSn != 'null' and comSn != ''">
+                record_com_sn,
+            </if>
+            <if test="employeeNum != null">
+                record_emp_num,
+            </if>
+            <if test="getComTime != null">
+                get_com_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="comSn != null and comSn != 'null' and comSn != ''">
+                #{comSn},
+            </if>
+            <if test="employeeNum != null">
+                #{employeeNum},
+            </if>
+            <if test="getComTime != null">
+                #{getComTime},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime}
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据记录ID修改其归还电脑时间-->
+    <update id="updateReturnComTime">
+        update com_emp_record
+        <trim prefix="set" suffixOverrides=",">
+            <if test="returnComTime != null">
+                return_com_time = #{returnComTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </trim>
+        where record_id = #{recordId}
+    </update>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.AccountMapper">
+<!--映射对象  -->
+<resultMap type="com.eastcom.ripple.entity.Account" id="BaseResultMap" >
+	<id column="account_id" property="accountId" jdbcType="BIGINT"/>
+	<result	column="account_name" property="accountName" jdbcType="VARCHAR"/>
+	<result column="account_password" property="accountPassword" jdbcType="VARCHAR"/>
+	<result	column="employee_id" property="employeeId" jdbcType="BIGINT"/>
+	<result	column="employee_name" property="employeeName" jdbcType="VARCHAR"/>
+	<result	column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+	<result	column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP"/>
+</resultMap>
+	<!-- 添加账号信息对象 -->
+	<insert id="addAccount"  useGeneratedKeys="true" keyProperty="accountId">
+		insert into tb_account(account_name,account_password,employee_id)
+		value(#{account.accountName},
+		#{account.accountPassword},
+		#{account.employeeId});
+	</insert>
+
+	<!-- 根据id更新员工账号对象 parameterType+@注解可以不写-->
+	<update id="updateAccountById"  useGeneratedKeys="true" keyProperty="accountId">
+		update tb_account set
+		account_name=#{account.accountName},account_password=#{account.accountPassword},modifyTime= current_timestamp()
+		where account_id=#{account.accountId};
+	</update>
+
+	<!--根据id删除账号信息对象  -->
+	<delete id="deleteAccountById" parameterType="Integer" >
+		delete from tb_account where account_id=#{accountId};
+	</delete>
+
+
+	<select id="findAll" resultMap="BaseResultMap" >
+		select a.account_id,a.account_name,REPLACE(a.account_password, SUBSTR(a.account_password,1), '******') as account_password,e.employee_id,e.employee_name,a.createTime,a.modifyTime
+		from tb_account a
+		left join tb_employee e on a.employee_id=e.employee_id
+		limit #{page.currentPage},#{page.pageSize};
+	</select>
+
+	<select id="findById"  resultMap="BaseResultMap">
+		select *from tb_account where account_id=#{accountId};
+	</select>
+
+<!--根据关键字获取对象  -->
+<select id="findAccountLike"  resultMap="BaseResultMap">
+	select a.account_id,a.account_name,REPLACE(a.account_password, SUBSTR(a.account_password,1), '******') as account_password,e.employee_id,e.employee_name,a.createTime,a.modifyTime
+	from tb_account a
+	left join tb_employee e on a.employee_id=e.employee_id
+	where account_id like concat('%',#{account.accountId},'%')
+	and account_name like concat('%',#{account.accountName},'%');
+</select>
+
+	<select id="findByAccountName" resultMap="BaseResultMap" >
+		select a.account_id,a.account_name,e.employee_id,e.employee_name
+		from tb_account a,tb_employee e
+		where a.employee_id=e.employee_id and a.account_name=#{accountName};
+	</select>
+</mapper>

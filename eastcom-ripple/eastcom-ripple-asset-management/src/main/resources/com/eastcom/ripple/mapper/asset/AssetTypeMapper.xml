@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.asset.AssetTypeMapper">
+
+    <!--查找所有资产类型-->
+    <select id="findAllAssetType" resultType="assetTypeVO">
+        select type_id,asset_type_name from asset_type
+    </select>
+
+    <!--根据资产类型名称查询类型id-->
+    <select id="findIdByAssetTypeName" parameterType="String" resultType="int">
+        select type_id from asset_type where asset_type_name = #{assetTypeName}
+    </select>
+</mapper>

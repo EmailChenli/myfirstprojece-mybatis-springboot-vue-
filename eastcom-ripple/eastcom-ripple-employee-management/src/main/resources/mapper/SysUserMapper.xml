@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.SysUserMapper">
+<!--映射对象  -->
+<resultMap type="com.eastcom.ripple.entity.SysUser" id="BaseResultMap" >
+	<id column="sysuser_id" property="sysuserId" jdbcType="BIGINT"/>
+	<result	column="sysuser_account" property="sysuserAccount" jdbcType="VARCHAR"/>
+	<result column="sysuser_password" property="sysuserPassword" jdbcType="VARCHAR"/>
+	<result	column="sysuser_status" property="sysuserStatus" jdbcType="INTEGER"/>
+	<result	column="role_id" property="roleId" jdbcType="INTEGER"/>
+	<result	column="role_name" property="roleName" jdbcType="VARCHAR"/>
+	<result	column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+	<result	column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP"/>
+</resultMap>
+	<update id="update" useGeneratedKeys="true" keyColumn="sysuserId">
+		UPDATE  tb_sysuser SET tb_sysuser.sysuser_account=#{sysUser.sysuserAccount},tb_sysuser.sysuser_password=#{sysUser.sysuserPassword},tb_sysuser.sysuser_status=#{sysUser.sysuserStatus},tb_sysuser.role_id=#{sysUser.roleId},tb_sysuser.modifyTime = CURRENT_TIMESTAMP()
+		WHERE tb_sysuser.sysuser_id=#{sysUser.sysuserId};
+	</update>
+
+    <update id="updatePassword" useGeneratedKeys="true" keyColumn="sysuserId">
+		UPDATE  tb_sysuser SET tb_sysuser.sysuser_password=#{passwordUtil.newPassword},tb_sysuser.modifyTime = CURRENT_TIMESTAMP()
+		WHERE tb_sysuser.sysuser_password=#{passwordUtil.oldPassword}
+		AND  tb_sysuser.sysuser_account=#{passwordUtil.accountName};
+	</update>
+	<select id="findAll" resultMap="BaseResultMap" >
+		SELECT tb_sysuser.sysuser_id,tb_sysuser.sysuser_account,REPLACE(tb_sysuser.sysuser_password, SUBSTR(tb_sysuser.sysuser_password,1), '******') as sysuser_password,tb_sysuser.sysuser_status,tb_sysuser.role_id,tb_role.role_name,tb_sysuser.createTime,tb_sysuser.modifyTime
+		FROM
+		tb_sysuser
+		JOIN tb_role ON tb_sysuser.role_id = tb_role.role_id
+		limit #{page.currentPage},#{page.pageSize};
+	</select>
+
+	<select id="findLike" resultMap="BaseResultMap">
+		SELECT tb_sysuser.sysuser_id,tb_sysuser.sysuser_account,REPLACE(tb_sysuser.sysuser_password, SUBSTR(tb_sysuser.sysuser_password,1), '******') as sysuser_password,tb_sysuser.sysuser_status,tb_sysuser.role_id,tb_role.role_name,tb_sysuser.createTime,tb_sysuser.modifyTime
+		FROM
+		tb_sysuser
+		JOIN tb_role ON tb_sysuser.role_id = tb_role.role_id
+		WHERE
+		tb_role.role_name like concat('%',#{sysUser.roleName},'%')
+		and tb_sysuser.sysuser_account like concat('%',#{sysUser.sysuserAccount},'%')
+		limit #{page.currentPage},#{page.pageSize};
+	</select>
+
+	<select id="findById"   resultMap="BaseResultMap">
+		select *from tb_sysuser where sysuser_id=#{sysuserId};
+	</select>
+
+	<!--检索用户对象-->
+	<select id="findSysUser" resultMap="BaseResultMap">
+		SELECT tb_sysuser.sysuser_id,tb_sysuser.sysuser_account,tb_sysuser.sysuser_password,tb_sysuser.sysuser_status
+		FROM tb_sysuser
+		WHERE tb_sysuser.sysuser_account = #{sysUser.sysuserAccount}
+	</select>
+
+    <!--检索用户信息-->
+    <select id="findSysUserInfo" resultMap="BaseResultMap">
+		SELECT tb_sysuser.sysuser_id,tb_sysuser.sysuser_account,REPLACE(tb_sysuser.sysuser_password, SUBSTR(tb_sysuser.sysuser_password,1), '******') as sysuser_password,tb_sysuser.sysuser_status,tb_sysuser.modifyTime,tb_sysuser.createTime,tb_sysuser.role_id
+        FROM tb_sysuser
+		WHERE tb_sysuser.sysuser_account = #{sysUserName}
+	</select>
+</mapper>

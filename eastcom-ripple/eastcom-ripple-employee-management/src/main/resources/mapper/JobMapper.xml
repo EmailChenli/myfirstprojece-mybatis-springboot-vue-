@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.JobMapper">
+<resultMap type="com.eastcom.ripple.util.JobInfo" id="BaseResultMap">
+	<id column="job_id" property="jobId" jdbcType="INTEGER"/>
+	<result	column="job_name" property="jobName" jdbcType="VARCHAR"/>
+	<result column="job_msg" property="jobMsg" jdbcType="VARCHAR"/>
+	<result	column="department_id" property="departmentId" jdbcType="INTEGER"/>
+	<result	column="department_name" property="departmentName" jdbcType="INTEGER"/>
+	<result	column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+	<result	column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP"/>
+</resultMap>
+<!-- 添加职位对象 -->
+<insert id="addJob"  useGeneratedKeys="true" keyProperty="jobId">
+	insert into tb_job(job_name,job_msg,department_id)
+	value(#{jobInfo.jobName},#{jobInfo.jobMsg},#{jobInfo.departmentId});
+</insert>
+
+
+<!--更新职位对象-->
+<update id="updateJob"  useGeneratedKeys="true" keyProperty="jobId">
+	update tb_job set
+	job_name=#{jobInfo.jobName},
+	job_msg=#{jobInfo.jobMsg},
+	department_id=#{jobInfo.departmentId},
+	modifyTime= current_timestamp() where
+	job_id=#{jobInfo.jobId};
+</update>
+
+<!--根据id删除对象  -->
+<delete id="deleteJobById" parameterType="Integer" >
+	delete from tb_job where job_id=#{jobId};
+</delete>
+
+
+<!--查询所有职位信息-->
+<select id="findAll" resultMap="BaseResultMap" >
+	select j.job_id,j.job_name,j.job_msg,j.department_id,
+	j.createTime,
+	j.modifyTime,
+	d.department_name
+	from tb_job j inner join tb_department d on
+	d.department_id = j.department_id
+	where j.job_id>0
+	order by j.job_id asc
+	limit #{page.currentPage},#{page.pageSize};
+</select>
+<!--根据Id获取职位-->
+<select id="findById" parameterType="Integer" resultMap="BaseResultMap">
+	select *from tb_job where job_id=#{jobId};
+</select>
+	<!--查找职位对象-->
+	<select id="findByName"  resultMap="BaseResultMap" >
+		select * from tb_job where job_name=#{jobName} and department_id=#{departmentId}
+	</select>
+
+<!--根据关键字获取对象  -->
+<select id="findJobLike"  resultMap="BaseResultMap">
+	select j.job_id,j.job_name,j.job_msg,j.department_id,
+	j.createTime,
+	j.modifyTime,
+	d.department_name
+	from tb_job j inner join tb_department d on
+	d.department_id = j.department_id
+	where j.job_id>0 and
+	d.department_name like concat('%',#{jobInfo.departmentName},'%')
+	and j.job_name like concat('%',#{jobInfo.jobName},'%')
+	order by j.job_id asc;
+</select>
+
+</mapper>

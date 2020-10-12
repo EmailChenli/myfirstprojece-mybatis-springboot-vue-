@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eastcom.ripple.mapper.EmployeeDimissionMapper">
+<!--映射对象  -->
+<resultMap type="com.eastcom.ripple.entity.EmployeeDimission" id="BaseResultMap" >
+	<id column="employeeD_id" property="employeeDimissionId" jdbcType="BIGINT"/>
+	<result	column="employeeD_name" property="employeeDimissionName" jdbcType="VARCHAR"/>
+	<result column="employeeD_sex" property="employeeDimissionSex" jdbcType="VARCHAR"/>
+	<result	column="employeeD_phone" property="employeeDimissionPhone" jdbcType="VARCHAR"/>
+	<result	column="employeeD_email" property="employeeDimissionEmail" jdbcType="VARCHAR"/>
+	<result	column="employeeD_eduSchool" property="employeeDimissionEduSchool" jdbcType="VARCHAR"/>
+	<result	column="employeeD_idcard" property="employeeDimissionIdcard" jdbcType="VARCHAR"/>
+	<result	column="employeeD_address" property="employeeDimissionAddress" jdbcType="VARCHAR"/>
+	<result	column="job_id" property="jobId" jdbcType="INTEGER"/>
+	<result	column="job_name" property="jobName" jdbcType="VARCHAR"/>
+	<result	column="department_name" property="departmentName" jdbcType="VARCHAR"/>
+	<result	column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+	<result	column="modifyTime" property="modifyTime" jdbcType="TIMESTAMP"/>
+</resultMap>
+	<!-- 添加删除员工对象 -->
+	<insert id="addEmployeeDimission" useGeneratedKeys="true" keyProperty="employeeDimissionId">
+		insert into tb_employeedimission(employeeD_id,employeeD_name,employeeD_sex,employeeD_phone,employeeD_email,employeeD_eduSchool,employeeD_idcard,employeeD_address,job_name,department_name)
+		values(#{employeeDimission.employeeDimissionId},#{employeeDimission.employeeDimissionName},#{employeeDimission.employeeDimissionSex},#{employeeDimission.employeeDimissionPhone},#{employeeDimission.employeeDimissionEmail},#{employeeDimission.employeeDimissionEduSchool},#{employeeDimission.employeeDimissionIdcard},#{employeeDimission.employeeDimissionAddress},#{employeeDimission.jobName},#{employeeDimission.departmentName});
+	</insert>
+
+	<!--根据id删除对象  -->
+	<delete id="deleteDimissionEmployeeById" >
+		delete from tb_employee where employee_id=#{employeeId};
+	</delete>
+
+	<select id="findAll" resultMap="BaseResultMap">
+		select employeeD_id,employeeD_name,employeeD_sex,REPLACE(employeeD_phone, SUBSTR(employeeD_phone,4,4), '****') as employeeD_phone,employeeD_email,employeeD_eduSchool,REPLACE(employeeD_idcard, SUBSTR(employeeD_idcard,5,10), '**********') as employeeD_idcard,employeeD_address,job_name,department_name,createTime,modifyTime
+		from tb_employeedimission
+		limit #{page.currentPage},#{page.pageSize};
+	</select>
+
+	<select id="findById"  resultMap="BaseResultMap">
+		select * from  tb_employeedimission where employeeD_id=#{employeeDimissionId};
+	</select>
+
+	<!--根据关键字获取对象  -->
+	<select id="findDimissionEmployeeLike"  resultMap="BaseResultMap">
+	 	select employeeD_id,employeeD_name,employeeD_sex,REPLACE(employeeD_phone, SUBSTR(employeeD_phone,4,4), '****') as employeeD_phone,employeeD_email,employeeD_eduSchool,REPLACE(employeeD_idcard, SUBSTR(employeeD_idcard,5,10), '**********') as employeeD_idcard,employeeD_address,job_name,department_name,createTime,modifyTime
+		from tb_employeedimission
+		where
+		employeeD_id like concat('%',#{employeeDimission.employeeDimissionId},'%')
+		and employeeD_name like concat('%',#{employeeDimission.employeeDimissionName},'%');
+	</select>
+
+</mapper>
